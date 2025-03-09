@@ -287,9 +287,6 @@ func serveTemplate(w http.ResponseWriter, r *http.Request) {
 					font-size: 0.8em;
 					text-decoration: none;
 				}
-				.article a:hover {
-					background-color: #f0f0f0;
-				}
 			</style>
 		</head>
 		<body>
