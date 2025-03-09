@@ -6,6 +6,7 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"os"
 	"strings"
 	"sync"
 	"time"
@@ -38,8 +39,12 @@ func main() {
 	http.HandleFunc("/", serveTemplate)
 	http.HandleFunc("/load-more", loadMoreArticles)
 
-	log.Println("Server started on http://localhost:8080")
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+	log.Println("Server started on http://localhost:" + port)
+	log.Fatal(http.ListenAndServe(":"+port, nil))
 }
 
 func refreshCache() {
@@ -169,6 +174,10 @@ func scrapePreviewFromArticle(articleURL string) string {
 		preview = strings.Join(words[:40], " ")
 	}
 
+	if len(preview) > 300 {
+		preview = preview[:300]
+	}
+
 	return preview + "..."
 }
 
@@ -268,7 +277,6 @@ func serveTemplate(w http.ResponseWriter, r *http.Request) {
 					color:rgb(194, 198, 199);
 					font-size: 0.8em;
 					max-width: 80vw;
-					white-space: nowrap;
 					overflow: hidden;
 					text-overflow: ellipsis;
 				}
