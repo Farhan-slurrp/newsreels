@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>NewsReels</title>
+        <link rel="stylesheet" href="/static/styles.css">
+    </head>
+    <body>
+        {{ if eq (len .Articles) 0 }}
+        <div class="loader">
+            <div class="loader-body">
+                <div></div>
+                <div></div>
+            </div>
+        </div>
+        {{ else }}
+        <div class="container" id="article-container">
+            {{range .Articles}}
+                <div class="article">
+                    <img src="{{.Thumbnail}}" alt="Thumbnail">
+                    <div class="overlay"></div>
+                    <div class="texts">
+                        <div class="title">
+                            {{.Title}}
+                        </div>
+                        <div class="preview">
+                            {{.Preview}}
+                        </div>
+                        <a href="{{.URL}}" target="_blank">Read More</a>
+                    </div>
+                </div>
+            {{end}}
+        </div>
+        {{ end }}
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                let isFetching = false;
+                const articleContainer = document.getElementById('article-container');
+
+                function loadMoreArticles(offset=0) {
+                    if (isFetching) return;
+                    isFetching = true;
+                    console.log('Fetching new articles...');
+                    fetch(`/load-more?offset=${offset}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            data.forEach(article => {
+                                const articleElement = document.createElement('div');
+                                articleElement.classList.add('article');
+
+                                const overlay = document.createElement('div');
+                                overlay.classList.add('overlay');
+                                articleElement.appendChild(overlay);
+
+                                const textsElement = document.createElement('div');
+                                textsElement.classList.add('texts');
+                                articleElement.appendChild(textsElement);
+
+                                const img = document.createElement('img');
+                                img.src = article.Thumbnail;
+                                img.alt = "Thumbnail";
+                                articleElement.appendChild(img);
+
+                                const titleDiv = document.createElement('div');
+                                titleDiv.classList.add('title');
+                                titleDiv.textContent = article.Title;
+                                textsElement.appendChild(titleDiv);
+
+                                const previewDiv = document.createElement('div');
+                                previewDiv.classList.add('preview');
+                                previewDiv.textContent = article.Preview;
+                                textsElement.appendChild(previewDiv);
+
+                                const readMoreLink = document.createElement('a');
+                                readMoreLink.href = article.URL;
+                                readMoreLink.target = "_blank";
+                                readMoreLink.textContent = "Read More";
+                                textsElement.appendChild(readMoreLink);
+
+                                articleContainer.appendChild(articleElement);
+                            });
+
+                        })
+                        .catch(error => {
+                            console.error('Error loading articles:', error);
+                        })
+                        .finally(() => {
+                            isFetching = false; // Reset the fetching flag
+                        });
+                }
+
+                articleContainer.addEventListener('scroll', () => {
+                    if (isFetching) {
+                        return;
+                    }
+
+                    const articles = Array.from(articleContainer.children);
+                    if (articles.length > 0 && articles.length < 30) {
+                        const lastArticle = articles[articles.length - 1]
+                        const rect = lastArticle.getBoundingClientRect();
+
+                        if (rect.bottom <= window.innerHeight + 300) {
+                            console.log('The of page, triggering loadMoreArticles');
+                            loadMoreArticles(articles.length);
+                        }
+                    }
+                    
+                    if (articles.length >= 30) {
+                        const lastThirtyArticles = articles.slice(-30);
+                        
+                        const firstArticleInBatch = lastThirtyArticles[0];
+
+                        const rect = firstArticleInBatch.getBoundingClientRect();
+                        
+                        if (rect.bottom <= window.innerHeight + 300) {
+                            console.log('Near end of page, triggering loadMoreArticles');
+                            loadMoreArticles();
+                        }
+                    }
+                });
+            });
+        </script>
+    </body>
+</html>

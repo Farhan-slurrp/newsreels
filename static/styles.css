@@ -1,0 +1,149 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #eee;
+    display: grid;
+    place-items: center;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+.container {
+    width: 600px;
+    height: 100svh;
+    overflow-y: scroll;
+    scroll-snap-type: y mandatory;
+    padding: 0;
+    scroll-behavior: smooth;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.container::-webkit-scrollbar { 
+    display: none;  /* Safari and Chrome */
+}
+
+.article {
+    width: 100%;
+    height: 100svh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: black;
+    scroll-snap-align: start;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.article img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.article .overlay {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: black;
+    opacity: 70%;
+    z-index: 1;
+}
+
+.article .texts {
+    position: absolute;
+    bottom: 40px;
+    left: 20px;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3em;
+}
+
+.texts .title {
+    color: white;
+    font-size: 1em;
+    font-weight: bold;
+    max-width: 80%;
+}
+
+.texts .preview {
+    color:rgb(194, 198, 199);
+    font-size: 0.8em;
+    max-width: 80%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.texts a {
+    display: inline-block;
+    margin-top: 10px;
+    color:rgb(194, 198, 199);
+    font-size: 0.8em;
+    text-decoration: none;
+}
+
+.loader {
+    display: flex;
+    height: 100svh;
+}
+
+.loader-body {
+    margin: auto;
+    display: flex;
+    align-items: center;
+}
+
+.loader-body > div {
+    width: 20px;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    display: inline-block;
+    margin: 0;
+    position: relative;
+}
+
+.loader-body > div:nth-child(1) {
+    background: #fe2c55;
+    animation: clockwise 1200ms infinite linear;
+}
+
+.loader-body > div:nth-child(2) {
+    mix-blend-mode: darken;
+    background: #25f4ee;
+    margin-left: -5px;
+    animation: counter-clockwise 1200ms infinite linear;
+}
+
+@keyframes clockwise {
+    0% {
+        transform: translateX(0);
+        width: 20px;
+    }
+
+    25% {
+        width: 25px;
+    }
+
+    50% {
+        transform: translateX(100%);
+        width: 20px;
+    }
+}
+
+@keyframes counter-clockwise {
+    0% {
+        transform: translateX(0);
+    }
+    50% {
+        transform: translateX(-100%);
+    }
+}
